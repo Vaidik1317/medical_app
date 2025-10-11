@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+module.exports =(sequelize, DataTypes) => {
     const Services = sequelize.define( 'Services', {
         id:{
             type:DataTypes.UUID,

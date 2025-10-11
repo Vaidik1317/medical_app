@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+module.exports =(sequelize, DataTypes) => {
     const Bill = sequelize.define('Bill', {
         id: {
             type: DataTypes.UUID,
@@ -9,6 +9,10 @@ export default (sequelize, DataTypes) => {
             type: DataTypes.UUID,
             allowNull:false
         },
+           patient_id: {        
+        type: DataTypes.UUID,
+        allowNull: false
+    },
         total_amount : {
             type: DataTypes.DECIMAL(12,2),
             allowNull:false,

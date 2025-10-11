@@ -69,6 +69,7 @@ CREATE TABLE appointment_services (
 CREATE TABLE bills (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     appointment_id UUID REFERENCES appointments(id) ON DELETE CASCADE,
+    patient_id UUID REFERENCES patients(id) ON DELETE CASCADE,
     total_amount NUMERIC(12,2) DEFAULT 0,
     tax NUMERIC(12,2) DEFAULT 0,
     discount NUMERIC(12,2) DEFAULT 0,

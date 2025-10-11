@@ -1,9 +1,9 @@
-const {sequelize} = require('../config/connectDB')
-const { Doctor } = require('../models/index')
+
+const {sequelize, Doctor } = require('../models/index')
 
 
 const getAllDoctor = async(req, res) => {
-
+ 
     try {
 
         const doctor = await Doctor.findAll()
@@ -21,10 +21,11 @@ const getDoctorSchedule = async (req, res) => {
     try {
 
         const doctorId = req.params.id;
+        console.log("🚀 ~ getDoctorSchedule ~ doctorId:", doctorId)
 
 
         const [schedule] = await sequelize.query(
-            `SELECT * FROM get_doctor_schedule(:doctorId);`,
+            `SELECT * FROM get_doctor_schedule(:doctorId::uuid);`,
             {
                 replacements: {doctorId}
             }
@@ -38,4 +39,19 @@ const getDoctorSchedule = async (req, res) => {
     }
 }
 
-module.exports.doctorController = {getAllDoctor, getDoctorSchedule}
+const createDoctor = async (req, res) => {
+    try {
+        const {name ,specialization, contact } = req.body;
+
+        const doctor = await Doctor.create({name ,specialization, contact })
+        console.log("🚀 ~ createDoctor ~ doctor:", doctor)
+
+        res.status(201).json(doctor)
+    } catch (error) {
+        console.log("🚀 ~ createDoctor ~ error:", error)
+         res.status(500).json({message:"something went wrong"})
+    }
+
+}
+
+module.exports.doctorController = {getAllDoctor, getDoctorSchedule ,createDoctor}

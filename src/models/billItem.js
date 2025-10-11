@@ -1,4 +1,4 @@
-export default (sequelize, DataTypes) => {
+module.exports =(sequelize, DataTypes) => {
     const BillItem = sequelize.define( 'BillItem' , {
         id : {
             type: DataTypes.UUID,
