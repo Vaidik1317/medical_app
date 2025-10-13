@@ -11,14 +11,19 @@ const generateBill = async (req, res) => {
     const service_ids_literal = `{${service_ids.join(",")}}`;
     const quantities_literal = `{${quantities.join(",")}}`;
 
-    await sequelize.query(
-      `CALL generate_bill(:appointment_id, :service_ids, :quantities);`,
-      {
-        replacements: { appointment_id, service_ids: service_ids_literal, quantities: quantities_literal }
-      }
-    );
+   const [result] = await sequelize.query(
+  `SELECT generate_bill(:appointment_id, :service_ids, :quantities) AS bill_id;`,
+  {
+    replacements: { appointment_id, service_ids: service_ids_literal, quantities: quantities_literal },
+    type: sequelize.QueryTypes.SELECT
+  }
+);
 
-    res.status(201).json({ message: "Bill generated successfully" });
+res.status(201).json({
+  message: "Bill generated successfully",
+  bill_id: result.bill_id
+});
+
   } catch (error) {
     console.log("🚀 ~ generateBill ~ error:", error);
     res.status(500).json({ message: "something went wrong" });
@@ -29,13 +34,19 @@ const generateBill = async (req, res) => {
 const makeBillPaid = async (req, res) => {
   try {
     const { id } = req.params;
-    await sequelize.query(`CALL mark_bill_paid(:id);`, { replacements: { id } });
+
+    await sequelize.query(
+      `CALL mark_bill_paid(:id::uuid);`,
+      { replacements: { id } }
+    );
+
     res.status(200).json({ message: "Bill marked as paid successfully" });
   } catch (error) {
     console.log("🚀 ~ makeBillPaid ~ error:", error);
     res.status(500).json({ message: "something went wrong" });
   }
 };
+
 
 // update bill discount
 const updateBillDiscount = async (req, res) => {

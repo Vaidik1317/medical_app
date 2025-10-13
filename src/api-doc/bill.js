@@ -6,7 +6,7 @@
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: string
  *         name:
  *           type: string
  *         cost:
@@ -20,7 +20,7 @@
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: string
  *         bill_id:
  *           type: integer
  *         service_id:
@@ -46,7 +46,7 @@
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: string
  *         patient_id:
  *           type: integer
  *         doctor_id:
@@ -68,7 +68,7 @@
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: string
  *         appointment_id:
  *           type: integer
  *         total_amount:
@@ -122,7 +122,7 @@
  *         name: patientId
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: ID of the patient
  *     responses:
  *       200:
@@ -145,7 +145,7 @@
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Bill ID
  *     responses:
  *       200:
@@ -170,7 +170,7 @@
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Bill ID
  *     responses:
  *       200:
@@ -250,7 +250,7 @@
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Bill ID
  *     responses:
  *       200:
@@ -271,7 +271,7 @@
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Bill ID
  *     requestBody:
  *       required: true
