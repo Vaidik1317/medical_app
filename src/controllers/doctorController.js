@@ -7,6 +7,7 @@ const getAllDoctor = async(req, res) => {
     try {
 
         const doctor = await Doctor.findAll()
+        console.log("🚀 ~ getAllDoctor ~ doctor:", doctor)
 
         res.status(200).json(doctor)
     } catch (error) {

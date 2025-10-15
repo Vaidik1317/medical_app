@@ -16,6 +16,17 @@ const Patient = sequelize.define('Patient', {
     contact: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    email : {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique : true,
+        validate: {isEmail: true}
+    },
+
+    password: {
+        type: DataTypes.STRING,
+        allowNull: true
     }
 },
 {

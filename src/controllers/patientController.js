@@ -3,16 +3,37 @@ const {Patient} = require('../models')
 
 const createPatient = async (req, res) => {
     try {
-        const {name, dob, contact} = req.body;
+        const {name, dob, contact, email , password} = req.body;
  
 
-        const patient = await Patient.create({name, dob, contact})
+        const patient = await Patient.create({name, dob, contact, email , password})
         res.status(201).json(patient)
     } catch (error) {
         console.log("🚀 ~ createPatient ~ error:", error)
           res.status(500).json({message:"something went wrong"})
         
     }
+}
+
+
+const createPatientByStaff = async (req, res) => {
+  try {
+         const {name, dob, contact, email } = req.body;
+
+          if (!name || !contact)
+      return res.status(400).json({ message: "Full name and contact are required" });
+
+
+          
+         const byStaff = await Patient.create({name, dob, contact, email})
+         console.log("🚀 ~ createPatientByStaff ~ byStaff:", byStaff)
+         res.status(201).json(byStaff)
+  } catch (error) {
+    console.log("🚀 ~ createPatientByStaff ~ error:", error)
+    res.status(500).json({message:"something went wrong"})
+    
+  }
+
 }
 
 const getAllPatient = async (req, res) => {
@@ -86,4 +107,5 @@ const deletePatient = async(req, res) => {
 }
 
 
-module.exports.patientController = {createPatient, getAllPatient,getPatientById, updatePatient,deletePatient }
+
+module.exports.patientController = {createPatient, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }

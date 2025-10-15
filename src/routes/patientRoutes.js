@@ -8,6 +8,7 @@ const {patientController} = require('../controllers/patientController')
     router.get('/patient', patientController.getAllPatient)
     router.get('/patient/:id', patientController.getPatientById)
     router.post('/patient', patientController.createPatient)
+    router.post('/patient', patientController.createPatientByStaff)
     router.put('/patient/:id', patientController.updatePatient)
     router.delete('/patient/:id', patientController.deletePatient)
  
