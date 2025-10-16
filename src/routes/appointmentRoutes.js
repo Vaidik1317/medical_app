@@ -8,7 +8,7 @@ const {appointmentController}  = require('../controllers/appointmentController')
     router.get('/appointment', appointmentController.getAllAppointment)
     router.post('/appointment', appointmentController.createAppointment)
     router.put('/appointment/:id', appointmentController.cancelAppointment)
-    router.get('/appointment/:id', appointmentController.getAppointmentById)
+    router.get('/appointment/:id', appointmentController.getAppointmentsByPatientId)
 
     // AppointmentService routes
     router.post('/appointment-service', appointmentController.createAppointmentService)

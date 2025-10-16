@@ -1,5 +1,5 @@
-# TODO for AppointmentService CRUD
+# TODO: Fix PostgreSQL Backup Version Mismatch
 
-- [x] Update appointmentController.js: Add CRUD functions for AppointmentService (createAppointmentService, getAppointmentServices, getAppointmentServiceById, updateAppointmentService, deleteAppointmentService)
-- [x] Update appointmentRoutes.js: Add routes for AppointmentService endpoints (/appointment-service)
-- [x] Update api-doc/appointment.js: Add Swagger schema and API documentation for AppointmentService
+- [x] Update backupController.js to prepend PostgreSQL 17 bin to PATH in exec options for backupFullDatabase function
+- [x] Update backupController.js to prepend PostgreSQL 17 bin to PATH in exec options for backupTable function
+- [ ] Test the backup functionality after changes

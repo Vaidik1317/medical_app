@@ -91,6 +91,44 @@
  *
  *
  * /api/appointment/{id}:
+ *   get:
+ *     summary: Get appointments by patient ID
+ *     tags: [Appointments]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Patient ID to get appointments for
+ *     responses:
+ *       200:
+ *         description: List of patient's appointments with doctor and services details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - $ref: '#/components/schemas/Appointment'
+ *                   - type: object
+ *                     properties:
+ *                       doctor:
+ *                         type: object
+ *                         description: Doctor details
+ *                       services:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                           properties:
+ *                             service:
+ *                               type: object
+ *                               description: Service details
+ *                             quantity:
+ *                               type: integer
+ *       500:
+ *         description: Something went wrong
+ *
  *   put:
  *     summary: Cancel an appointment
  *     tags: [Appointments]

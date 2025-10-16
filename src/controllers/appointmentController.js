@@ -44,25 +44,23 @@ const getAllAppointment = async (req, res) => {
     }
 };
 
-const getAppointmentById = async (req, res) => {
+const getAppointmentsByPatientId = async (req, res) => {
     try {
+        const patient_id = req.params.id;
+        const appointments = await Appointment.findAll({
+            where: { patient_id },
+            include: [
+                { model: require('../models').Doctor, as: 'doctor' },
+                { model: require('../models').AppointmentService, as: 'services', include: [{ model: require('../models').Service, as: 'service' }] }
+            ]
+        });
 
-        const appointment_id = req.params.id
-        const appointment = await Appointment.findOne({
-             where: {id: appointment_id}
-        })
-
-          if (!appointment) {
-      return res.status(404).json({ message: 'Patient not found' });
-    }
-
-     res.status(200).json(appointment)
+        res.status(200).json(appointments);
     } catch (error) {
-        console.log("🚀 ~ getAppointmentById ~ error:", error)
-        res.status(500).json({message:"something went wrong"})
-        
+        console.log("🚀 ~ getAppointmentsByPatientId ~ error:", error);
+        res.status(500).json({ message: "Something went wrong" });
     }
-}
+};
 const createAppointmentService = async (req, res) => {
     try {
         const { appointment_id, service_id, quantity } = req.body;
@@ -156,4 +154,4 @@ const deleteAppointmentService = async (req, res) => {
     }
 };
 
-module.exports.appointmentController = { createAppointment, getAppointmentById, cancelAppointment, getAllAppointment, createAppointmentService, getAppointmentServices, getAppointmentServiceById, updateAppointmentService, deleteAppointmentService };
+module.exports.appointmentController = { createAppointment, getAppointmentsByPatientId, cancelAppointment, getAllAppointment, createAppointmentService, getAppointmentServices, getAppointmentServiceById, updateAppointmentService, deleteAppointmentService };
