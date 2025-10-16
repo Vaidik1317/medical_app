@@ -1,12 +1,20 @@
 const { where } = require('sequelize');
 const {Patient} = require('../models')
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 
 const createPatient = async (req, res) => {
     try {
         const {name, dob, contact, email , password} = req.body;
  
+      const existingPatient = await Patient.findOne({where: {email}});
+      if(existingPatient) return res.status(400).json({message: 'Email already registered'})
 
-        const patient = await Patient.create({name, dob, contact, email , password})
+        const hashedPassword = await bcrypt.hash(password ,10);
+
+        const patient = await Patient.create({name, dob, contact, email , password : hashedPassword})
         res.status(201).json(patient)
     } catch (error) {
         console.log("🚀 ~ createPatient ~ error:", error)
@@ -15,6 +23,34 @@ const createPatient = async (req, res) => {
     }
 }
 
+
+const patientLogin = async(req, res) => {
+        try {
+           const { email, password } = req.body;
+
+                const patient = await Patient.findOne({where: {email}});
+                console.log("🚀 ~ patientLogin ~ patient:", patient)
+      if(!patient) return res.status(400).json({message: 'Patient not found'})
+
+        const isMatch = await bcrypt.compare(password, patient.password)
+        console.log("🚀 ~ patientLogin ~ isMatch:", isMatch)
+
+        if(!isMatch) return res.status(401).json({message: 'Invalid creadentials'})
+
+          // generate JWT token
+
+          const token = jwt.sign( {id: patient.id, email: patient.email},
+            process.env.JWT_SECRET,
+            {expiresIn: '7d'}
+            );
+
+            res.status(200).json({message: "Login successful" , token});
+        } catch (error) {
+          console.log("🚀 ~ patientLogin ~ error:", error)
+             res.status(500).json({message:"something went wrong"})
+          
+        }
+}
 
 const createPatientByStaff = async (req, res) => {
   try {
@@ -108,4 +144,4 @@ const deletePatient = async(req, res) => {
 
 
 
-module.exports.patientController = {createPatient, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }
+module.exports.patientController = {createPatient,patientLogin, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }
