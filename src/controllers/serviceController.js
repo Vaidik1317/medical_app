@@ -18,7 +18,7 @@ const getAllService = async (req, res) =>  {
     try {
         const service = await Service.findAll()
 
-        res.status(200).json({service})
+        res.status(200).json(service)
     } catch (error) {
         console.log("🚀 ~ getAllService ~ error:", error)
           res.status(500).json({message:"something went wrong"})

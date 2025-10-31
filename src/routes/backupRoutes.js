@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const {backupController} = require('../controllers/backupController')
+const { backupFullDatabase, backupTable } = require('../controllers/backupController');
 
-router.post('/backup/full', backupController.backupFullDatabase);
-router.post('/backup/:tableName', backupController.backupTable)
+// Use GET so the browser / Swagger can download directly
+router.get('/backup/full', backupFullDatabase);
+router.get('/backup/:tableName', backupTable);
 
 module.exports = router;

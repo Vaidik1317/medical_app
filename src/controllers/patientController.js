@@ -50,18 +50,18 @@ const patientLogin = async(req, res) => {
              res.status(500).json({message:"something went wrong"})
           
         }
-}
+} 
 
 const createPatientByStaff = async (req, res) => {
   try {
-         const {name, dob, contact, email } = req.body;
+         const {name, dob, contact, } = req.body;
 
           if (!name || !contact)
       return res.status(400).json({ message: "Full name and contact are required" });
 
 
           
-         const byStaff = await Patient.create({name, dob, contact, email})
+         const byStaff = await Patient.create({name, dob, contact, })
          console.log("🚀 ~ createPatientByStaff ~ byStaff:", byStaff)
          res.status(201).json(byStaff)
   } catch (error) {
