@@ -126,20 +126,25 @@ const deleteBill = async (req, res) => {
 const getPatientBills = async (req, res) => {
   try {
     const { patientId } = req.params;
+    console.log("🚀 ~ getPatientBills ~ patientId:", patientId);
+
     const bills = await Bill.findAll({
-      where: { patient_id: patientId },
+      where: { patient_id: patientId }, 
       include: [
         { model: BillItem, as: 'items', include: ['service'] },
         { model: Appointment, as: 'appointment', include: ['doctor'] }
       ],
       order: [['created_at', 'DESC']]
     });
+
+    console.log("🚀 ~ getPatientBills ~ bills:", bills);
     res.status(200).json(bills);
   } catch (error) {
     console.log("🚀 ~ getPatientBills ~ error:", error);
     res.status(500).json({ message: "something went wrong" });
   }
 };
+
 
 
 module.exports.billController = {

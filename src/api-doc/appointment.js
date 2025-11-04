@@ -129,7 +129,8 @@
  *       500:
  *         description: Something went wrong
  *
- *   put:
+ * /api/appointment/cancel/{id}:
+ *   patch:
  *     summary: Cancel an appointment
  *     tags: [Appointments]
  *     parameters:

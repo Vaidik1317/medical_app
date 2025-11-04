@@ -139,6 +139,24 @@
  *       500:
  *         description: Something went wrong
  *
+ * /api/patient/logout:
+ *   post:
+ *     summary: Logout a patient
+ *     tags: [Patients]
+ *     description: Logs out a patient by clearing the authentication cookie (or optionally blacklisting the JWT token).
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Patient logged out successfully
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Patient logged out successfully
+ *       401:
+ *         description: Unauthorized - Missing or invalid token
+ *       500:
+ *         description: Something went wrong while logging out
  * /api/patient/staff:
  *   post:
  *     summary: Create patient by staff

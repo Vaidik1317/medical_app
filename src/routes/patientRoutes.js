@@ -9,6 +9,7 @@ const { verifyToken } = require('../middlewares/authMiddleware');
     router.get('/patient',   patientController.getAllPatient)
     router.get('/patient/:id', patientController.getPatientById)
     router.post('/patient', patientController.createPatient)
+    router.post('/patient/logout', patientController.logoutPatient)
     router.post('/patient/staff', patientController.createPatientByStaff)
     router.post('/patient/login', patientController.patientLogin);
     router.put('/patient/:id', patientController.updatePatient)

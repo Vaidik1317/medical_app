@@ -44,13 +44,35 @@ const patientLogin = async(req, res) => {
             {expiresIn: '7d'}
             );
 
-            res.status(200).json({message: "Login successful" , token});
+            res.status(200).json({message: "Login successful" , patient,token});
         } catch (error) {
           console.log("🚀 ~ patientLogin ~ error:", error)
              res.status(500).json({message:"something went wrong"})
           
         }
 } 
+
+
+const logoutPatient = async (req, res) => {
+  // console.log()
+  try {
+    // If you're storing JWT in cookies
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // only secure in production
+      sameSite: "none",
+    });
+
+    // Optional: if token is sent in header, you can choose to blacklist it
+    // const token = req.headers.authorization?.split(' ')[1];
+    // await BlacklistedToken.create({ token });
+
+    return res.status(200).json({ message: "Patient logged out successfully" });
+  } catch (error) {
+    console.error("🚀 ~ logoutPatient ~ error:", error);
+    res.status(500).json({ message: "Something went wrong while logging out" });
+  }
+};
 
 const createPatientByStaff = async (req, res) => {
   try {
@@ -144,4 +166,4 @@ const deletePatient = async(req, res) => {
 
 
 
-module.exports.patientController = {createPatient,patientLogin, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }
+module.exports.patientController = {createPatient,patientLogin,logoutPatient, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }
