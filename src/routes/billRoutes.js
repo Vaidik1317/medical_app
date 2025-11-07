@@ -24,3 +24,4 @@ router.get('/bill/patient/:patientId', billController.getPatientBills);
 router.delete('/bill/:id', billController.deleteBill);
 
 module.exports = router;
+ 

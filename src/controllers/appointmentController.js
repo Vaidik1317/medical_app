@@ -1,22 +1,64 @@
 const {sequelize, Appointment, AppointmentService, Service} = require('../models');
 
-const createAppointment = async (req, res) => { 
-    try {
-        const {patient_id, doctor_id, start_time, end_time } = req.body;
+const createAppointment = async (req, res) => {
+  const t = await sequelize.transaction();
+  try {
+    const { patient_id, doctor_id, start_time, end_time, services = [] } = req.body;
 
-        await sequelize.query(
-            `CALL schedule_appointment(:patient_id::uuid, :doctor_id::uuid, :start_time, :end_time);`,
-            {
-                replacements: { patient_id, doctor_id, start_time, end_time }
-            }
-        );
+    // 1️⃣ Create appointment using stored procedure with conflict checking
+    await sequelize.query(
+      `CALL schedule_appointment(:patient_id, :doctor_id, :start_time, :end_time);`,
+      {
+        replacements: { patient_id, doctor_id, start_time, end_time },
+        transaction: t,
+      }
+    );
 
-        res.status(201).json({ message: "Appointment scheduled successfully" });
-    } catch (error) {
-        console.log("🚀 ~ createAppointment ~ error:", error);
-        res.status(500).json({ message: "something went wrong" });
-    } 
+    // 2️⃣ Get the created appointment
+    const [appointmentResult] = await sequelize.query(
+      `SELECT * FROM appointments
+       WHERE patient_id = :patient_id
+       AND doctor_id = :doctor_id
+       AND start_time = :start_time
+       AND end_time = :end_time;`,
+      {
+        replacements: { patient_id, doctor_id, start_time, end_time },
+        type: sequelize.QueryTypes.SELECT,
+        transaction: t,
+      }
+    );
+
+    const appointment = appointmentResult;
+
+    // 3️⃣ Add appointment services
+    if (Array.isArray(services) && services.length > 0) {
+      const bulkData = services.map((s) => ({
+        appointment_id: appointment.id,
+        service_id: s.service_id,
+        quantity: s.quantity || 1,
+      }));
+
+      await AppointmentService.bulkCreate(bulkData, { transaction: t });
+    }
+
+    await t.commit();
+    res.status(201).json(appointment);
+  } catch (error) {
+    console.error("🚀 ~ createAppointment ~ error:", error);
+    await t.rollback();
+
+    // Check if it's a conflict error from the stored procedure
+    if (error.message && error.message.includes('Doctor has another appointment during this time')) {
+      return res.status(409).json({
+        message: "Doctor is not available at this time. Please choose a different time slot.",
+        error: "CONFLICT"
+      });
+    }
+
+    res.status(500).json({ message: "Something went wrong" });
+  }
 };
+
 
 const cancelAppointment = async (req, res) => {
     try {
@@ -154,4 +196,27 @@ const deleteAppointmentService = async (req, res) => {
     }
 };
 
-module.exports.appointmentController = { createAppointment, getAppointmentsByPatientId, cancelAppointment, getAllAppointment, createAppointmentService, getAppointmentServices, getAppointmentServiceById, updateAppointmentService, deleteAppointmentService };
+const getServicesByAppointmentId = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const services = await AppointmentService.findAll({
+      where: { appointment_id: id },
+      include: [{ model: Service, as: 'service' }]
+    });
+
+    if (!services.length) {
+      return res
+        .status(404)
+        .json({ message: "No services found for this appointment. Please add some first." });
+    }
+
+    res.status(200).json(services);
+  } catch (error) {
+    console.log("🚀 ~ getServicesByAppointmentId ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+module.exports.appointmentController = { createAppointment,getServicesByAppointmentId, getAppointmentsByPatientId, cancelAppointment, getAllAppointment, createAppointmentService, getAppointmentServices, getAppointmentServiceById, updateAppointmentService, deleteAppointmentService };

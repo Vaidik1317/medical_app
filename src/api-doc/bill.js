@@ -115,8 +115,12 @@
  *
  * /api/bill/patient/{patientId}:
  *   get:
- *     summary: Get all bills for a specific patient
+ *     summary: Get all bills for a specific patient (with details)
  *     tags: [Bills]
+ *     description: |
+ *       Retrieves all bills for a given patient, including:
+ *       - Bill items with service details
+ *       - Associated appointment and doctor details
  *     parameters:
  *       - in: path
  *         name: patientId
@@ -133,8 +137,18 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/Bill'
+ *       404:
+ *         description: No bills found for the patient
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: No bills found for this patient
  *       500:
  *         description: Something went wrong
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Something went wrong
  *
  * /api/bill/{id}:
  *   get:
@@ -215,7 +229,7 @@
  *             type: object
  *             required:
  *               - appointment_id
- *               - service_ids
+ *               - service_ids 
  *               - quantities
  *             properties:
  *               appointment_id:

@@ -1,32 +1,64 @@
-const { sequelize, Bill, BillItem, Appointment } = require('../models');
+const { sequelize, Bill, BillItem, Service, Appointment, Doctor, AppointmentService } = require('../models');
 
 // generate bill
 const generateBill = async (req, res) => {
-  try { 
-    let { appointment_id, service_ids, quantities } = req.body;
+  try {
+    const { appointment_id } = req.body;
 
-    if (!Array.isArray(service_ids)) service_ids = [service_ids];
-    if (!Array.isArray(quantities)) quantities = [quantities];
+    // Fetch appointment to get patient_id
+    const appointment = await Appointment.findByPk(appointment_id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
 
-    const service_ids_literal = `{${service_ids.join(",")}}`;
-    const quantities_literal = `{${quantities.join(",")}}`;
+    // Fetch appointment services
+    const appointmentServices = await AppointmentService.findAll({
+      where: { appointment_id },
+      include: [{ model: Service, as: 'service' }]
+    });
 
-   const [result] = await sequelize.query(
-  `SELECT generate_bill(:appointment_id, :service_ids, :quantities) AS bill_id;`,
-  {
-    replacements: { appointment_id, service_ids: service_ids_literal, quantities: quantities_literal },
-    type: sequelize.QueryTypes.SELECT
-  }
-);
+    if (appointmentServices.length === 0) {
+      return res.status(400).json({ message: "No services found for this appointment" });
+    }
 
-res.status(201).json({
-  message: "Bill generated successfully",
-  bill_id: result.bill_id
-});
+    // Calculate total amount
+    let totalAmount = 0;
+    const billItems = appointmentServices.map(as => {
+      const subtotal = as.quantity * as.service.cost;
+      totalAmount += subtotal;
+      return {
+        service_id: as.service_id,
+        quantity: as.quantity,
+        unit_price: as.service.cost,
+        line_total: subtotal
+      };
+    });
 
+    // Create bill
+    const bill = await Bill.create({
+      appointment_id,
+      patient_id: appointment.patient_id,
+      total_amount: totalAmount,
+      tax: totalAmount * 0.05, // 5% tax
+      discount: 0,
+      paid: false
+    });
+
+    // Create bill items
+    for (const item of billItems) {
+      await BillItem.create({
+        bill_id: bill.id,
+        ...item
+      });
+    }
+
+    res.status(201).json({
+      message: "Bill generated successfully",
+      bill_id: bill.id
+    });
   } catch (error) {
     console.log("🚀 ~ generateBill ~ error:", error);
-    res.status(500).json({ message: "something went wrong" });
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 
@@ -126,22 +158,41 @@ const deleteBill = async (req, res) => {
 const getPatientBills = async (req, res) => {
   try {
     const { patientId } = req.params;
-    console.log("🚀 ~ getPatientBills ~ patientId:", patientId);
 
+    // Fetch all bills for the patient
     const bills = await Bill.findAll({
-      where: { patient_id: patientId }, 
+      where: { patient_id: patientId },
       include: [
-        { model: BillItem, as: 'items', include: ['service'] },
-        { model: Appointment, as: 'appointment', include: ['doctor'] }
+        {
+          model: BillItem,
+          as: 'items',
+          include: [
+            {
+              model: Service,
+              as: 'service',
+              attributes: ['id', 'name', 'cost'], // only needed fields
+            }
+          ]
+        },
+        {
+          model: Appointment,
+          as: 'appointment',
+          include: [
+            {
+              model: Doctor,
+              as: 'doctor',
+              attributes: ['id', 'name', 'specialization']
+            }
+          ]
+        }
       ],
       order: [['created_at', 'DESC']]
     });
 
-    console.log("🚀 ~ getPatientBills ~ bills:", bills);
     res.status(200).json(bills);
   } catch (error) {
-    console.log("🚀 ~ getPatientBills ~ error:", error);
-    res.status(500).json({ message: "something went wrong" });
+    console.error("🚀 ~ getPatientBills ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
   }
 };
 

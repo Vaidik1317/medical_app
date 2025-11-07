@@ -19,7 +19,7 @@ module.exports =(sequelize, DataTypes) => {
             validate: {
                 min: 1,
             },
-        },
+        }, 
 
         unit_price :{
             type: DataTypes.DECIMAL(12,2),

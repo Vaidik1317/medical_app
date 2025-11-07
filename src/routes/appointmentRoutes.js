@@ -16,6 +16,7 @@ const {appointmentController}  = require('../controllers/appointmentController')
     router.get('/appointment-service/:id', appointmentController.getAppointmentServiceById)
     router.put('/appointment-service/:id', appointmentController.updateAppointmentService)
     router.delete('/appointment-service/:id', appointmentController.deleteAppointmentService)
+    router.get('/appointment/:id/services', appointmentController.getServicesByAppointmentId);
 
 
 module.exports = router;

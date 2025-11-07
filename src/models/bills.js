@@ -25,7 +25,7 @@ module.exports =(sequelize, DataTypes) => {
         discount: {
             type: DataTypes.DECIMAL(12,2),
             defaultValue: 0,
-        },
+        }, 
         paid: {
             type: DataTypes.BOOLEAN,
             defaultValue: false

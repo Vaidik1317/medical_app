@@ -59,8 +59,11 @@
  *         description: Something went wrong
  *
  *   post:
- *     summary: Schedule a new appointment
+ *     summary: Schedule a new appointment (with optional services)
  *     tags: [Appointments]
+ *     description: |
+ *       Creates a new appointment for a patient with a doctor.  
+ *       Optionally, you can include an array of services to be attached to this appointment.
  *     requestBody:
  *       required: true
  *       content:
@@ -75,21 +78,50 @@
  *             properties:
  *               patient_id:
  *                 type: string
+ *                 example: "uuid-patient-123"
  *               doctor_id:
  *                 type: string
+ *                 example: "uuid-doctor-456"
  *               start_time:
  *                 type: string
  *                 format: date-time
+ *                 example: "2025-10-15T09:00:00Z"
  *               end_time:
  *                 type: string
  *                 format: date-time
+ *                 example: "2025-10-15T09:30:00Z"
+ *               services:
+ *                 type: array
+ *                 description: Optional list of services to add to this appointment
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     service_id:
+ *                       type: string
+ *                       example: "uuid-service-789"
+ *                     quantity:
+ *                       type: integer
+ *                       example: 2
  *     responses:
  *       201:
- *         description: Appointment scheduled successfully
+ *         description: Appointment scheduled successfully with optional services
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Appointment scheduled successfully with services
+ *               appointment:
+ *                 id: "uuid-appointment-001"
+ *                 patient_id: "uuid-patient-123"
+ *                 doctor_id: "uuid-doctor-456"
+ *                 start_time: "2025-10-15T09:00:00Z"
+ *                 end_time: "2025-10-15T09:30:00Z"
+ *                 status: "Scheduled"
  *       500:
  *         description: Something went wrong
- *
- *
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Something went wrong
  * /api/appointment/{id}:
  *   get:
  *     summary: Get appointments by patient ID
@@ -273,4 +305,69 @@
  *         description: Appointment service not found
  *       500:
  *         description: Something went wrong
+ */
+/**
+ * @swagger
+ * /api/appointment/{id}/services:
+ *   get:
+ *     summary: Get all services for a specific appointment
+ *     tags: [AppointmentServices]
+ *     description: |
+ *       Returns all services linked to a specific appointment ID.  
+ *       Each service includes its details and assigned quantity.  
+ *       If no services are found, a `404` error is returned.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the appointment to fetch associated services for
+ *     responses:
+ *       200:
+ *         description: List of services associated with the appointment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     description: AppointmentService record ID
+ *                   appointment_id:
+ *                     type: string
+ *                     description: Appointment ID
+ *                   service_id:
+ *                     type: string
+ *                     description: Service ID
+ *                   quantity:
+ *                     type: integer
+ *                     description: Quantity of the service assigned
+ *                     example: 1
+ *                   service:
+ *                     type: object
+ *                     description: Details of the service
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                       name:
+ *                         type: string
+ *                         example: "Dental Cleaning"
+ *                       cost:
+ *                         type: number
+ *                         example: 50.0
+ *       404:
+ *         description: No services found for this appointment
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: No services found for this appointment. Please add some first.
+ *       500:
+ *         description: Something went wrong
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Something went wrong
  */
