@@ -10,7 +10,7 @@ router.patch('/bill/:id/pay', billController.makeBillPaid);
 
 // Update bill discount
 router.patch('/bill/:id/discount', billController.updateBillDiscount);
-
+ 
 // Get all bills
 router.get('/bill', billController.getAllBills);
 

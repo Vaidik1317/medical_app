@@ -5,34 +5,46 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     // Get existing appointment and service IDs
     const appointments = await queryInterface.sequelize.query(`SELECT id FROM appointments;`);
-    const services = await queryInterface.sequelize.query(`SELECT id FROM services;`);
+    const generalServices = await queryInterface.sequelize.query(`SELECT id FROM general_services;`);
+    const doctorServices = await queryInterface.sequelize.query(`SELECT id FROM doctor_services;`);
 
     const appointmentRows = appointments[0];
-    const serviceRows = services[0];
+    const generalServiceRows = generalServices[0];
+    const doctorServiceRows = doctorServices[0];
+
+    if (!appointmentRows || appointmentRows.length === 0) {
+      throw new Error('No appointments found');
+    }
+    if (!generalServiceRows || generalServiceRows.length === 0) {
+      throw new Error('No general services found');
+    }
+    if (!doctorServiceRows || doctorServiceRows.length === 0) {
+      throw new Error('No doctor services found');
+    }
 
     await queryInterface.bulkInsert('appointment_services', [
       {
         id: uuidv4(),
         appointment_id: appointmentRows[0].id,
-        service_id: serviceRows[0].id, // General Consultation
+        general_service_id: generalServiceRows[0].id, // General Consultation
         quantity: 1,
       },
       {
         id: uuidv4(),
         appointment_id: appointmentRows[0].id,
-        service_id: serviceRows[1].id, // Blood Test
+        general_service_id: generalServiceRows[1].id, // Blood Test
         quantity: 2,
       },
       {
         id: uuidv4(),
         appointment_id: appointmentRows[1].id,
-        service_id: serviceRows[2].id, // X-Ray
+        general_service_id: generalServiceRows[2].id, // X-Ray
         quantity: 1,
       },
       {
         id: uuidv4(),
         appointment_id: appointmentRows[1].id,
-        service_id: serviceRows[3].id, // ECG
+        doctor_service_id: doctorServiceRows[0].id, // Cardiac Consultation
         quantity: 1,
       },
     ]);

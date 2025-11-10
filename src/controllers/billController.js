@@ -1,4 +1,4 @@
-const { sequelize, Bill, BillItem, Service, Appointment, Doctor, AppointmentService } = require('../models');
+const { sequelize, Bill, BillItem, DoctorService, GeneralService, Appointment, Doctor, AppointmentService } = require('../models');
 
 // generate bill
 const generateBill = async (req, res) => {
@@ -7,6 +7,7 @@ const generateBill = async (req, res) => {
 
     // Fetch appointment to get patient_id
     const appointment = await Appointment.findByPk(appointment_id);
+    console.log("🚀 ~ generateBill ~ appointment:", appointment)
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
@@ -14,8 +15,12 @@ const generateBill = async (req, res) => {
     // Fetch appointment services
     const appointmentServices = await AppointmentService.findAll({
       where: { appointment_id },
-      include: [{ model: Service, as: 'service' }]
-    });
+      include: [
+        { model: DoctorService, as: 'doctorService' },
+        { model: GeneralService, as: 'generalService' }
+      ]
+    }); 
+    console.log("🚀 ~ generateBill ~ appointmentServices:", appointmentServices)
 
     if (appointmentServices.length === 0) {
       return res.status(400).json({ message: "No services found for this appointment" });
@@ -24,12 +29,17 @@ const generateBill = async (req, res) => {
     // Calculate total amount
     let totalAmount = 0;
     const billItems = appointmentServices.map(as => {
-      const subtotal = as.quantity * as.service.cost;
+      const service = as.doctorService || as.generalService;
+      if (!service) {
+        throw new Error(`Service not found for appointment service ${as.id}`);
+      }
+      const subtotal = as.quantity * service.cost;
       totalAmount += subtotal;
       return {
-        service_id: as.service_id,
+        doctor_service_id: as.doctor_service_id,
+        general_service_id: as.general_service_id,
         quantity: as.quantity,
-        unit_price: as.service.cost,
+        unit_price: service.cost,
         line_total: subtotal
       };
     });
@@ -103,7 +113,10 @@ const getAllBills = async (req, res) => {
         {
           model: BillItem,
           as: 'items',
-          include: ['service']  // BillItem -> Service
+          include: [
+            { model: DoctorService, as: 'doctorService' },
+            { model: GeneralService, as: 'generalService' }
+          ]
         },
         {
           model: Appointment,
@@ -128,10 +141,17 @@ const getBillsById = async (req, res) => {
     const bill = await Bill.findOne({
       where: { id },
       include: [
-        { model: BillItem, as: 'items', include: ['service'] },
+        {
+          model: BillItem,
+          as: 'items',
+          include: [
+            { model: DoctorService, as: 'doctorService' },
+            { model: GeneralService, as: 'generalService' }
+          ]
+        },
         { model: Appointment, as: 'appointment', include: ['patient', 'doctor'] }
       ]
-    });
+    }); 
 
     if (!bill) return res.status(404).json({ message: 'Bill not found' });
     res.status(200).json(bill);
@@ -168,8 +188,13 @@ const getPatientBills = async (req, res) => {
           as: 'items',
           include: [
             {
-              model: Service,
-              as: 'service',
+              model: DoctorService,
+              as: 'doctorService',
+              attributes: ['id', 'name', 'cost'], // only needed fields
+            },
+            {
+              model: GeneralService,
+              as: 'generalService',
               attributes: ['id', 'name', 'cost'], // only needed fields
             }
           ]

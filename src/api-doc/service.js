@@ -2,7 +2,7 @@
  * @swagger
  * components:
  *   schemas:
- *     Service:
+ *     GeneralService:
  *       type: object
  *       properties:
  *         id:
@@ -11,33 +11,53 @@
  *           type: string
  *         cost:
  *           type: number
+ *         category:
+ *           type: string
  *       example:
- *         id: 1
- *         name: Blood Test
- *         cost: 50.5
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         name: "Blood Test"
+ *         cost: 25.00
+ *         category: "Laboratory"
  *
- * /api/service:
+ *     DoctorService:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         doctor_id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         cost:
+ *           type: number
+ *       example:
+ *         id: "550e8400-e29b-41d4-a716-446655440001"
+ *         doctor_id: "550e8400-e29b-41d4-a716-446655440002"
+ *         name: "Cardiac Consultation"
+ *         cost: 150.00
+ *
+ * /api/general:
  *   get:
- *     summary: Get all services
- *     tags: [Services]
+ *     summary: Get all general services
+ *     tags: [General Services]
  *     responses:
  *       200:
- *         description: List of services
+ *         description: List of general services
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 service:
+ *                 services:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Service'
+ *                     $ref: '#/components/schemas/GeneralService'
  *       500:
  *         description: Something went wrong
  *
  *   post:
- *     summary: Create a service
- *     tags: [Services]
+ *     summary: Create a general service
+ *     tags: [General Services]
  *     requestBody:
  *       required: true
  *       content:
@@ -52,16 +72,18 @@
  *                 type: string
  *               cost:
  *                 type: number
+ *               category:
+ *                 type: string
  *     responses:
  *       201:
- *         description: Service created
+ *         description: General service created
  *       500:
  *         description: Something went wrong
  *
- * /api/service/{id}:
+ * /api/general/{id}:
  *   get:
- *     summary: Get service by ID
- *     tags: [Services]
+ *     summary: Get general service by ID
+ *     tags: [General Services]
  *     parameters:
  *       - in: path
  *         name: id
@@ -70,15 +92,15 @@
  *         required: true
  *     responses:
  *       200:
- *         description: Service details
+ *         description: General service details
  *       404:
- *         description: Service not found
+ *         description: General service not found
  *       500:
  *         description: Something went wrong
  *
  *   put:
- *     summary: Update a service
- *     tags: [Services]
+ *     summary: Update a general service
+ *     tags: [General Services]
  *     parameters:
  *       - in: path
  *         name: id
@@ -96,17 +118,19 @@
  *                 type: string
  *               cost:
  *                 type: number
+ *               category:
+ *                 type: string
  *     responses:
  *       200:
- *         description: Service updated
+ *         description: General service updated
  *       404:
- *         description: Service not found
+ *         description: General service not found
  *       500:
  *         description: Something went wrong
  *
  *   delete:
- *     summary: Delete a service
- *     tags: [Services]
+ *     summary: Delete a general service
+ *     tags: [General Services]
  *     parameters:
  *       - in: path
  *         name: id
@@ -115,9 +139,90 @@
  *         required: true
  *     responses:
  *       200:
- *         description: Service deleted
+ *         description: General service deleted
  *       404:
- *         description: Service not found
+ *         description: General service not found
  *       500:
  *         description: Something went wrong
+ *
+ * /api/doctor-services/{doctorId}:
+ *   get:
+ *     summary: Get all doctor services for a specific doctor
+ *     tags: [Doctor Services]
+ *     parameters:
+ *       - in: path
+ *         name: doctorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Doctor ID
+ *     responses:
+ *       200:
+ *         description: List of doctor services
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DoctorService'
+ *       500:
+ *         description: Something went wrong
+ *
+ * /api/doctor-services:
+ *   post:
+ *     summary: Create a doctor service
+ *     tags: [Doctor Services]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - doctor_id
+ *               - name
+ *               - cost
+ *             properties:
+ *               doctor_id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               cost:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Doctor service created
+ *       500:
+ *         description: Something went wrong
+ *
+ * /api/available/{doctorId}:
+ *   get:
+ *     summary: Get all available services for a doctor
+ *     tags: [Services]
+ *     parameters:
+ *       - in: path
+ *         name: doctorId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Doctor ID
+ *     responses:
+ *       200:
+ *         description: List of available services
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 doctor_services:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/DoctorService'
+ *                 general_services:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/GeneralService'
+ *       500:
+ *         description: Something went wrong
+ *
  */

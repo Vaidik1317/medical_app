@@ -31,7 +31,9 @@
  *           type: string
  *         appointment_id:
  *           type: string
- *         service_id:
+ *         doctor_service_id:
+ *           type: string
+ *         general_service_id:
  *           type: string
  *         quantity:
  *           type: integer
@@ -39,7 +41,8 @@
  *       example:
  *         id: "uuid"
  *         appointment_id: "uuid"
- *         service_id: "uuid"
+ *         doctor_service_id: "uuid"
+ *         general_service_id: "uuid"
  *         quantity: 1
  *
  * /api/appointment:
@@ -96,9 +99,12 @@
  *                 items:
  *                   type: object
  *                   properties:
- *                     service_id:
+ *                     doctor_service_id:
  *                       type: string
- *                       example: "uuid-service-789"
+ *                       example: "uuid-doctor-service-789"
+ *                     general_service_id:
+ *                       type: string
+ *                       example: "uuid-general-service-789"
  *                     quantity:
  *                       type: integer
  *                       example: 2
@@ -219,11 +225,14 @@
  *             type: object
  *             required:
  *               - appointment_id
- *               - service_id
+ *               - doctor_service_id
+ *               - general_service_id
  *             properties:
  *               appointment_id:
  *                 type: string
- *               service_id:
+ *               doctor_service_id:
+ *                 type: string
+ *               general_service_id:
  *                 type: string
  *               quantity:
  *                 type: integer
@@ -276,7 +285,9 @@
  *             properties:
  *               appointment_id:
  *                 type: string
- *               service_id:
+ *               doctor_service_id:
+ *                 type: string
+ *               general_service_id:
  *                 type: string
  *               quantity:
  *                 type: integer
@@ -339,9 +350,12 @@
  *                   appointment_id:
  *                     type: string
  *                     description: Appointment ID
- *                   service_id:
+ *                   doctor_service_id:
  *                     type: string
- *                     description: Service ID
+ *                     description: Doctor Service ID
+ *                   general_service_id:
+ *                     type: string
+ *                     description: General Service ID
  *                   quantity:
  *                     type: integer
  *                     description: Quantity of the service assigned

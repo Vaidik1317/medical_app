@@ -1,10 +1,15 @@
 module.exports =(sequelize, DataTypes) => {
-    const Services = sequelize.define( 'Services', {
+    const DoctorService = sequelize.define( 'DoctorService', {
         id:{
             type:DataTypes.UUID,
             defaultValue: DataTypes.UUIDV4,
             primaryKey: true
         },
+         doctor_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+       
+      },
         name: {
             type: DataTypes.STRING,
             allowNull: false,
@@ -17,11 +22,11 @@ module.exports =(sequelize, DataTypes) => {
     },
 
     {
-        tableName: 'services',
+        tableName: 'doctor_services',
         timestamps: false
     }
 )
 
 
- return Services;
+ return DoctorService;
 }

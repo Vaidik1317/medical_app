@@ -1,100 +1,108 @@
+const { DoctorService, GeneralService, Doctor } = require('../models');
 
-const {Service} = require('../models')
+// ===================== Doctor Services =====================
 
-const createService = async (req, res) => {
-    try {
+// 🩺 Create a new doctor-specific service
+const createDoctorService = async (req, res) => {
+  try {
+    const { doctor_id, name, cost } = req.body;
+    console.log("🚀 ~ createDoctorService ~ doctor_id, name, cost:", doctor_id, name, cost);
+
+    // ✅ fix falsy cost check (0 should be allowed)
+    if (!doctor_id?.trim() || !name?.trim() || cost === null || cost === undefined) {
+      return res.status(400).json({ message: "doctor_id, name, and cost are required" });
+    }
+
+    // ✅ ensure doctor exists
+    const doctor = await Doctor.findByPk(doctor_id);
+    console.log("🚀 ~ createDoctorService ~ doctor:", doctor);
+    if (!doctor) return res.status(404).json({ message: "Doctor not found" });
+
+    // ✅ create new service
+    const service = await DoctorService.create({ doctor_id, name, cost });
+    return res.status(201).json(service);
+    
+  } catch (error) {
+    console.log("🚀 ~ createDoctorService ~ error:", error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+console.log("🚀 ~ createDoctorService ~ createDoctorService:", createDoctorService)
+console.log("🚀 ~ createDoctorService ~ createDoctorService:", createDoctorService)
+
+// 🩺 Get all services for a specific doctor
+const getDoctorServices = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    const services = await DoctorService.findAll({
+      where: { doctor_id: doctorId },
+      order: [["name", "ASC"]],
+    });
+
+    res.status(200).json(services);
+  } catch (error) {
+    console.log("🚀 ~ getDoctorServices ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// ===================== General Services =====================
+
+// 🏥 Create a new general service (like MRI, X-Ray)
+const createGeneralService = async (req, res) => {
+  try {
+    const { name, cost , category } = req.body;
+
+    if (!name || !cost) {
+      return res.status(400).json({ message: "name and cost are required" });
+    }
+
+    const service = await GeneralService.create({ name, cost, category });
+    res.status(201).json(service);
+  } catch (error) {
+    console.log("🚀 ~ createGeneralService ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// 🏥 Get all general services
+const getAllGeneralServices = async (req, res) => {
+  try {
+    const services = await GeneralService.findAll({ order: [["name", "ASC"]] });
+    res.status(200).json(services);
+  } catch (error) {
+    console.log("🚀 ~ getAllGeneralServices ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// ===================== Combined (for patient view) =====================
+
+// 👩‍⚕️ Get all available services for a given doctor (doctor-specific + general)
+const getAvailableServicesForDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+
+    const doctorServices = await DoctorService.findAll({ where: { doctor_id: doctorId } });
+    const generalServices = await GeneralService.findAll();
+
+    res.status(200).json({
+      doctor_services: doctorServices,
+      general_services: generalServices,
+    });
+  } catch (error) {
+    console.log("🚀 ~ getAvailableServicesForDoctor ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+module.exports.serviceController = {
+  createDoctorService,
+  getDoctorServices,
+  createGeneralService,
+  getAllGeneralServices,
+  getAvailableServicesForDoctor,
+};
  
-        const {name , cost} = req.body
-        const service = await Service.create({name , cost })
-        res.status(201).json(service)
-    } catch (error) {
-        console.log("🚀 ~ createService ~ error:", error)
-        res.status(500).json({message:"something went wrong"})
-        
-    }
-}
-
-const getAllService = async (req, res) =>  {
-    try {
-        const service = await Service.findAll()
-
-        res.status(200).json(service)
-    } catch (error) {
-        console.log("🚀 ~ getAllService ~ error:", error)
-          res.status(500).json({message:"something went wrong"})
-        
-    }
-}
-
-const getServiceById = async (req, res) => {
-    try {
-        const service_id = req.params.id;
-        const service = await Service.findOne({
-            where: {
-                id: service_id
-            }
-        })
-
-        if (!service) {
-            return res.status(404).json({ message: 'Service not found' });
-        }
-
-        res.status(200).json(service)
-    } catch (error) {
-        console.log("🚀 ~ getServiceById ~ error:", error)
-            res.status(500).json({message:"something went wrong"})
-    }
-}
-
-const updateService = async (req, res) => {
-    try {
-         const {name , cost} = req.body;
-
-         const service_id = req.params.id;
-        const service = await Service.findOne({
-            where: {
-                id: service_id
-            }
-        })
-
-        if (!service) {
-            return res.status(404).json({ message: 'Service not found' });
-        }
-
-        await service.update({name , cost})
-
-        res.status(200).json(service)
-
-
-    } catch (error) {
-        console.log("🚀 ~ updateService ~ error:", error)
-         res.status(500).json({message:"something went wrong"})
-
-    }
-}
-
-const deleteService = async (req, res) => {
-   try {
-       const service_id = req.params.id;
-        const service = await Service.findOne({
-            where: {
-                id: service_id
-            }
-        })
-
-        if (!service) {
-            return res.status(404).json({ message: 'Service not found' });
-        }
-
-        await service.destroy()
-
-        res.status(200).json({message: "service deleted"})
-
-   } catch (error) {
-    console.log("🚀 ~ deleteService ~ error:", error)
-      res.status(500).json({message:"something went wrong"})
-
-   }
-}
-
-module.exports.serviceController = {createService, getAllService, getServiceById,updateService, deleteService }

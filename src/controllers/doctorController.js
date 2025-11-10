@@ -16,7 +16,7 @@ const getAllDoctor = async(req, res) => {
 
     }
 
-}
+} 
 
 const getDoctorSchedule = async (req, res) => {
     try {

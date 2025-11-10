@@ -9,9 +9,13 @@ module.exports =(sequelize, DataTypes) => {
             type: DataTypes.UUID,
             allowNull: false,
         },
-        service_id : {
+        doctor_service_id: {
             type: DataTypes.UUID,
-            allowNull: false
+            allowNull: true
+        },
+        general_service_id: {
+            type: DataTypes.UUID,
+            allowNull: true
         },
         quantity : {
             type: DataTypes.INTEGER,
@@ -19,7 +23,7 @@ module.exports =(sequelize, DataTypes) => {
             validate: {
                 min: 1,
             },
-        }, 
+        },
 
         unit_price :{
             type: DataTypes.DECIMAL(12,2),

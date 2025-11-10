@@ -164,6 +164,6 @@ const deletePatient = async(req, res) => {
     }
 }
 
-
+ 
 
 module.exports.patientController = {createPatient,patientLogin,logoutPatient, getAllPatient,getPatientById, updatePatient,deletePatient, createPatientByStaff }

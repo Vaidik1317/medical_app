@@ -1,4 +1,4 @@
-const {sequelize, Appointment, AppointmentService, Service} = require('../models');
+const {sequelize, Appointment, AppointmentService, DoctorService, GeneralService} = require('../models');
 
 const createAppointment = async (req, res) => {
   const t = await sequelize.transaction();
@@ -12,7 +12,7 @@ const createAppointment = async (req, res) => {
         replacements: { patient_id, doctor_id, start_time, end_time },
         transaction: t,
       }
-    );
+    ); 
 
     // 2️⃣ Get the created appointment
     const [appointmentResult] = await sequelize.query(
@@ -34,7 +34,8 @@ const createAppointment = async (req, res) => {
     if (Array.isArray(services) && services.length > 0) {
       const bulkData = services.map((s) => ({
         appointment_id: appointment.id,
-        service_id: s.service_id,
+        doctor_service_id: s.doctor_service_id || null,
+        general_service_id: s.general_service_id || null,
         quantity: s.quantity || 1,
       }));
 
@@ -93,7 +94,10 @@ const getAppointmentsByPatientId = async (req, res) => {
             where: { patient_id },
             include: [
                 { model: require('../models').Doctor, as: 'doctor' },
-                { model: require('../models').AppointmentService, as: 'services', include: [{ model: require('../models').Service, as: 'service' }] }
+                { model: require('../models').AppointmentService, as: 'services', include: [
+                    { model: require('../models').DoctorService, as: 'doctorService' },
+                    { model: require('../models').GeneralService, as: 'generalService' }
+                ] }
             ]
         });
 
@@ -105,11 +109,12 @@ const getAppointmentsByPatientId = async (req, res) => {
 };
 const createAppointmentService = async (req, res) => {
     try {
-        const { appointment_id, service_id, quantity } = req.body;
+        const { appointment_id, doctor_service_id, general_service_id, quantity } = req.body;
 
         const appointmentService = await AppointmentService.create({
             appointment_id,
-            service_id,
+            doctor_service_id: doctor_service_id || null,
+            general_service_id: general_service_id || null,
             quantity: quantity || 1
         });
 
@@ -125,7 +130,8 @@ const getAppointmentServices = async (req, res) => {
         const appointmentServices = await AppointmentService.findAll({
             include: [
                 { model: Appointment, as: 'appointment' },
-                { model: Service, as: 'service' }
+                { model: DoctorService, as: 'doctorService' },
+                { model: GeneralService, as: 'generalService' }
             ]
         });
         res.status(200).json(appointmentServices);
@@ -142,7 +148,8 @@ const getAppointmentServiceById = async (req, res) => {
             where: { id },
             include: [
                 { model: Appointment, as: 'appointment' },
-                { model: Service, as: 'service' }
+                { model: DoctorService, as: 'doctorService' },
+                { model: GeneralService, as: 'generalService' }
             ]
         });
 
@@ -160,10 +167,10 @@ const getAppointmentServiceById = async (req, res) => {
 const updateAppointmentService = async (req, res) => {
     try {
         const { id } = req.params;
-        const { appointment_id, service_id, quantity } = req.body;
+        const { appointment_id, doctor_service_id, general_service_id, quantity } = req.body;
 
         const [updated] = await AppointmentService.update(
-            { appointment_id, service_id, quantity },
+            { appointment_id, doctor_service_id: doctor_service_id || null, general_service_id: general_service_id || null, quantity },
             { where: { id } }
         );
 
@@ -202,7 +209,10 @@ const getServicesByAppointmentId = async (req, res) => {
   try {
     const services = await AppointmentService.findAll({
       where: { appointment_id: id },
-      include: [{ model: Service, as: 'service' }]
+      include: [
+        { model: DoctorService, as: 'doctorService' },
+        { model: GeneralService, as: 'generalService' }
+      ]
     });
 
     if (!services.length) {

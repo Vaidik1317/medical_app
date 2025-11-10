@@ -1,8 +1,6 @@
-# TODO: Implement Services in Appointment Creation and Auto-Generate Bills
+# TODO: Update Bill Swagger Documentation
 
-## Steps to Complete
-
-- [x] Update `createAppointment` in `src/controllers/appointmentController.js` to accept `services` array, use `Appointment.create` instead of stored procedure, and create `AppointmentService` entries for each service.
-- [ ] Update `generateBill` in `src/controllers/billController.js` to make `service_ids` and `quantities` optional; if not provided, fetch from appointment's services.
-- [ ] Test creating an appointment with services.
-- [ ] Test generating a bill without providing services (auto-fetch from appointment).
+- [ ] Define DoctorService and GeneralService schemas in swagger components
+- [ ] Update BillItem schema to include doctor_service_id, general_service_id, unit_price, line_total, and correct refs
+- [ ] Update POST /api/bill requestBody to only require appointment_id
+- [ ] Update Bill schema example to include patient and doctor objects in appointment

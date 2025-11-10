@@ -2,7 +2,7 @@
  * @swagger
  * components:
  *   schemas:
- *     Service:
+ *     DoctorService:
  *       type: object
  *       properties:
  *         id:
@@ -12,7 +12,21 @@
  *         cost:
  *           type: number
  *       example:
- *         id: 5
+ *         id: "550e8400-e29b-41d4-a716-446655440000"
+ *         name: Consultation
+ *         cost: 100.0
+ *
+ *     GeneralService:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         name:
+ *           type: string
+ *         cost:
+ *           type: number
+ *       example:
+ *         id: "550e8400-e29b-41d4-a716-446655440001"
  *         name: Blood Test
  *         cost: 50.5
  *
@@ -22,25 +36,36 @@
  *         id:
  *           type: string
  *         bill_id:
- *           type: integer
- *         service_id:
- *           type: integer
+ *           type: string
+ *         doctor_service_id:
+ *           type: string
+ *           nullable: true
+ *         general_service_id:
+ *           type: string
+ *           nullable: true
  *         quantity:
  *           type: integer
- *         price:
+ *         unit_price:
  *           type: number
- *         service:
- *           $ref: '#/components/schemas/Service'
+ *         line_total:
+ *           type: number
+ *         doctorService:
+ *           $ref: '#/components/schemas/DoctorService'
+ *         generalService:
+ *           $ref: '#/components/schemas/GeneralService'
  *       example:
- *         id: 1
- *         bill_id: 1
- *         service_id: 5
+ *         id: "550e8400-e29b-41d4-a716-446655440002"
+ *         bill_id: "550e8400-e29b-41d4-a716-446655440003"
+ *         doctor_service_id: "550e8400-e29b-41d4-a716-446655440000"
+ *         general_service_id: null
  *         quantity: 2
- *         price: 150.5
- *         service:
- *           id: 5
- *           name: Blood Test
- *           cost: 50.5
+ *         unit_price: 100.0
+ *         line_total: 200.0
+ *         doctorService:
+ *           id: "550e8400-e29b-41d4-a716-446655440000"
+ *           name: Consultation
+ *           cost: 100.0
+ *         generalService: null
  *
  *     Appointment:
  *       type: object
@@ -70,7 +95,7 @@
  *         id:
  *           type: string
  *         appointment_id:
- *           type: integer
+ *           type: string
  *         total_amount:
  *           type: number
  *         tax:
@@ -229,22 +254,10 @@
  *             type: object
  *             required:
  *               - appointment_id
- *               - service_ids 
- *               - quantities
  *             properties:
  *               appointment_id:
- *                 type: integer
- *                 example: 10
- *               service_ids:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 example: [1,2,5]
- *               quantities:
- *                 type: array
- *                 items:
- *                   type: integer
- *                 example: [2,1,3]
+ *                 type: string
+ *                 example: "550e8400-e29b-41d4-a716-446655440004"
  *     responses:
  *       201:
  *         description: Bill generated successfully
