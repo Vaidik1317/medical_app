@@ -7,3 +7,4 @@ router.get('/backup/full', backupFullDatabase);
 router.get('/backup/:tableName', backupTable);
 
 module.exports = router;
+ 

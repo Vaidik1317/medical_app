@@ -145,6 +145,53 @@
  *       500:
  *         description: Something went wrong
  *
+ * /api/doctor-services:
+ *   get:
+ *     summary: Get all doctor services (across all doctors)
+ *     tags: [Doctor Services]
+ *     responses:
+ *       200:
+ *         description: List of all doctor services
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 allOf:
+ *                   - $ref: '#/components/schemas/DoctorService'
+ *                   - type: object
+ *                     properties:
+ *                       doctor:
+ *                         $ref: '#/components/schemas/Doctor'
+ *       500:
+ *         description: Something went wrong
+ *
+ *   post:
+ *     summary: Create a doctor service
+ *     tags: [Doctor Services]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - doctor_id
+ *               - name
+ *               - cost
+ *             properties:
+ *               doctor_id:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               cost:
+ *                 type: number
+ *     responses:
+ *       201:
+ *         description: Doctor service created
+ *       500:
+ *         description: Something went wrong
+ *
  * /api/doctor-services/{doctorId}:
  *   get:
  *     summary: Get all doctor services for a specific doctor
@@ -192,6 +239,52 @@
  *     responses:
  *       201:
  *         description: Doctor service created
+ *       500:
+ *         description: Something went wrong
+ *
+ * /api/doctor-services/{id}:
+ *   put:
+ *     summary: Update a doctor service
+ *     tags: [Doctor Services]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               cost:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Doctor service updated
+ *       404:
+ *         description: Doctor service not found
+ *       500:
+ *         description: Something went wrong
+ *
+ *   delete:
+ *     summary: Delete a doctor service
+ *     tags: [Doctor Services]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Doctor service deleted
+ *       404:
+ *         description: Doctor service not found
  *       500:
  *         description: Something went wrong
  *

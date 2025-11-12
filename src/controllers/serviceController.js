@@ -48,6 +48,73 @@ const getDoctorServices = async (req, res) => {
   }
 };
 
+// 🩺 Get all doctor services (across all doctors)
+const getAllDoctorServices = async (req, res) => {
+  try {
+    const services = await DoctorService.findAll({
+      include: [{ model: Doctor, as: 'doctor' }],
+      order: [["name", "ASC"]],
+    });
+
+    res.status(200).json(services);
+  } catch (error) {
+    console.log("🚀 ~ getAllDoctorServices ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+
+
+// 🩺 Update a doctor-specific service
+const updateDoctorService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, cost } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+
+    const service = await DoctorService.findByPk(id);
+    if (!service) {
+      return res.status(404).json({ message: "Doctor service not found" });
+    }
+
+    // Update only provided fields
+    const updates = {};
+    if (name !== undefined) updates.name = name;
+    if (cost !== undefined) updates.cost = cost;
+
+    await service.update(updates);
+    res.status(200).json(service);
+  } catch (error) {
+    console.log("🚀 ~ updateDoctorService ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// 🩺 Delete a doctor-specific service
+const deleteDoctorService = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+
+    const service = await DoctorService.findByPk(id);
+    if (!service) {
+      return res.status(404).json({ message: "Doctor service not found" });
+    }
+
+    await service.destroy();
+    res.status(200).json({ message: "Doctor service deleted successfully" });
+  } catch (error) {
+    console.log("🚀 ~ deleteDoctorService ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 // ===================== General Services =====================
 
 // 🏥 Create a new general service (like MRI, X-Ray)
@@ -78,6 +145,57 @@ const getAllGeneralServices = async (req, res) => {
   }
 };
 
+// 🏥 Update a general service
+const updateGeneralService = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, cost, category } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+
+    const service = await GeneralService.findByPk(id);
+    if (!service) {
+      return res.status(404).json({ message: "General service not found" });
+    }
+
+    // Update only provided fields
+    const updates = {};
+    if (name !== undefined) updates.name = name;
+    if (cost !== undefined) updates.cost = cost;
+    if (category !== undefined) updates.category = category;
+
+    await service.update(updates);
+    res.status(200).json(service);
+  } catch (error) {
+    console.log("🚀 ~ updateGeneralService ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+// 🏥 Delete a general service
+const deleteGeneralService = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Service ID is required" });
+    }
+
+    const service = await GeneralService.findByPk(id);
+    if (!service) {
+      return res.status(404).json({ message: "General service not found" });
+    }
+
+    await service.destroy();
+    res.status(200).json({ message: "General service deleted successfully" });
+  } catch (error) {
+    console.log("🚀 ~ deleteGeneralService ~ error:", error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
 // ===================== Combined (for patient view) =====================
 
 // 👩‍⚕️ Get all available services for a given doctor (doctor-specific + general)
@@ -101,8 +219,13 @@ const getAvailableServicesForDoctor = async (req, res) => {
 module.exports.serviceController = {
   createDoctorService,
   getDoctorServices,
+  getAllDoctorServices,
+  updateDoctorService,
+  deleteDoctorService,
   createGeneralService,
   getAllGeneralServices,
+  updateGeneralService,
+  deleteGeneralService,
   getAvailableServicesForDoctor,
 };
  

@@ -12,10 +12,15 @@ const { serviceController } = require("../controllers/serviceController");
 // ======= New General Services =======
 router.get("/general", serviceController.getAllGeneralServices);
 router.post("/general", serviceController.createGeneralService);
+router.put("/general/:id", serviceController.updateGeneralService);
+router.delete("/general/:id", serviceController.deleteGeneralService);
 
 // ======= New Doctor-Specific Services =======
+router.get("/doctor-services", serviceController.getAllDoctorServices);
 router.get("/doctor-services/:doctorId", serviceController.getDoctorServices);
 router.post("/doctor-services", serviceController.createDoctorService);
+router.put("/doctor-services/:id", serviceController.updateDoctorService);
+router.delete("/doctor-services/:id", serviceController.deleteDoctorService);
 
 // ======= Combined (for booking / patient view) =======
 router.get("/available/:doctorId", serviceController.getAvailableServicesForDoctor);
