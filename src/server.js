@@ -52,7 +52,7 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
+        url:[ `http://localhost:${PORT}` || 'https://medical-app-gkkf.onrender.com' ],
       },
     ],
   },
