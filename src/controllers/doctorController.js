@@ -55,4 +55,24 @@ const createDoctor = async (req, res) => {
 
 }
 
-module.exports.doctorController = {getAllDoctor, getDoctorSchedule ,createDoctor}
+const deleteDoctor = async (req, res) => {
+
+    try {
+        const doctor_id = req.params.id
+        const deleteDoc = await Doctor.destroy({
+            where: {id: doctor_id}
+        })
+
+        if (deleteDoc === 0) {
+      return res.status(404).json({ message: 'Doctor not found' });
+    }
+     res.status(200).json({message: "Doctor deleted"})
+    } catch (error) {
+        console.log("🚀 ~ deleteDoctor ~ error:", error)
+          res.status(500).json({message:"something went wrong"})
+        
+    }
+
+}
+
+module.exports.doctorController = {getAllDoctor,deleteDoctor, getDoctorSchedule ,createDoctor}
