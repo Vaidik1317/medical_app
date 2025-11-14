@@ -52,12 +52,16 @@ const options = {
     },
     servers: [
       {
-        url:[ `http://localhost:${PORT}` || 'https://medical-app-gkkf.onrender.com' ],
+        url:
+          process.env.NODE_ENV === 'production'
+            ? 'https://medical-app-gkkf.onrender.com'
+            : `http://localhost:${PORT}`,
       },
     ],
   },
-  apis: apiFiles, // load all your JS Swagger docs
+  apis: apiFiles,
 };
+
 
 const swaggerSpec = swaggerJsdoc(options);
 
