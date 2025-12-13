@@ -54,7 +54,7 @@ const options = {
       {
         url:
           process.env.NODE_ENV === 'production'
-            ? 'https://medical-app-gkkf.onrender.com'
+            ? 'https://medical-app-9j8w.onrender.com/'
             : `http://localhost:${PORT}`,
       },
     ],

@@ -215,33 +215,6 @@
  *       500:
  *         description: Something went wrong
  *
- * /api/doctor-services:
- *   post:
- *     summary: Create a doctor service
- *     tags: [Doctor Services]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - doctor_id
- *               - name
- *               - cost
- *             properties:
- *               doctor_id:
- *                 type: string
- *               name:
- *                 type: string
- *               cost:
- *                 type: number
- *     responses:
- *       201:
- *         description: Doctor service created
- *       500:
- *         description: Something went wrong
- *
  * /api/doctor-services/{id}:
  *   put:
  *     summary: Update a doctor service
@@ -317,5 +290,4 @@
  *                     $ref: '#/components/schemas/GeneralService'
  *       500:
  *         description: Something went wrong
- *
  */
