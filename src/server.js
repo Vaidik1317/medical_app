@@ -52,10 +52,7 @@ const options = {
     },
     servers: [
       {
-        url:
-          process.env.NODE_ENV === 'production'
-            ? 'https://medical-app-9j8w.onrender.com/'
-            : `http://localhost:${PORT}`,
+       url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`,
       },
     ],
   },
