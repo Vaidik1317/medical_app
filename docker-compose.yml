@@ -1,0 +1,66 @@
+services:
+  backend1:
+    build:
+      context: .
+      args:
+        - NODE_ENV=production
+    container_name: medical_backend_1
+    environment:
+      - NODE_ENV=production
+      - PORT=7000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "7000:7000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  backend2:
+    build:
+      context: .
+      args:
+        - NODE_ENV=production
+    container_name: medical_backend_2
+    environment:
+      - NODE_ENV=production
+      - PORT=7000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+    ports:
+      - "7001:7000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:7000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: medical_nginx
+    ports:
+      - "8082:80"  # Changed from 8080 to 8081
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      backend1:
+        condition: service_healthy
+      backend2:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
