@@ -8,7 +8,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const fs = require('fs')
 const path  = require('path');
-
+require('dotenv').config();
 app.use(express.json())
 app.use(cors())
 
@@ -50,11 +50,17 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for Appointment, Billing, Doctor, Patient & Services',
     },
-    servers: [
-      {
-       url: process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`,
-      },
-    ],
+servers: [
+  {
+    url: `http://localhost:${PORT}`,
+    description: 'Local server',
+  },
+  {
+    url: 'https://medical-app-1-ls0b.onrender.com',
+    description: 'Production server',
+  },
+],
+
   },
   apis: apiFiles,
 };
